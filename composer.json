@@ -1,0 +1,43 @@
+{
+    "name": "phoole/middleware",
+    "type": "library",
+    "license": "Apache-2.0",
+    "version": "1.0.0",
+    "description": "A slim middleware implementation",
+    "keywords": ["phoole", "library", "php", "middleware", "swoole"],
+    "authors": [
+        {
+            "name": "Hong Zhang",
+            "homepage": "https://github.com/phoole"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.0",
+        "phoole/base": "^1.0.16",
+        "psr/http-server-middleware": "^1.0.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8",
+        "guzzlehttp/psr7": "1.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phoole\\Middleware\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phoole\\Tests\\": "tests/"
+        }
+    },
+    "provide": {
+        "psr/http-server-handler-implementation": "1.0",
+        "psr/http-server-middleware-implementation": "1.0"
+    },
+    "minimum-stability": "dev",
+    "scripts": {
+        "test": "phpunit",
+        "check": "phpcs --standard=psr12 src/",
+        "format": "phpcbf --standard=psr12 src/"
+    }
+}
