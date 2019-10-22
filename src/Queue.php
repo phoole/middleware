@@ -20,11 +20,11 @@ use Psr\Http\Message\ServerRequestInterface;
  * Queue
  *
  * Runnable queue of middlewares
- * 
+ *
  * ```php
  * // init the queue with default handler(callable or RequestHandlerInterface)
  * $queue = new Queue(function($request) { return new Response(404)}; );
- * 
+ *
  * // add middlewares
  * $queue->add(
  *     new SessionMiddleware(), // object
@@ -34,7 +34,7 @@ use Psr\Http\Message\ServerRequestInterface;
  *         return $response;
  *     },
  * );
- * 
+ *
  * // run the queue
  * $queue->handle($request);
  * ```
@@ -45,14 +45,14 @@ class Queue implements RequestHandlerInterface, MiddlewareInterface
 {
     /**
      * queue of the middleware or callables
-     * 
+     *
      * @var  MiddlewareInterface[]|callable[]
      */
     protected $middlewares = [];
 
     /**
      * default handler
-     * 
+     *
      * @var  RequestHandlerInterface|callable
      */
     protected $defaultHandler;
@@ -108,7 +108,7 @@ class Queue implements RequestHandlerInterface, MiddlewareInterface
 
     /**
      * convert to standard RequestHandlerInterface
-     * 
+     *
      * @var    RequestHandlerInterface|callable|null $handler
      * @return RequestHandlerInterface
      * @throws \LogicException

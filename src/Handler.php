@@ -18,7 +18,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Handler
- * 
+ *
  * wrapper for middleware/callable/handler
  *
  * @package Phoole\Middleware
@@ -38,7 +38,7 @@ class Handler implements RequestHandlerInterface
     /**
      * @param RequestHandlerInterface|callable $handler
      * @param MiddlewareInterface|callable $middleware
-     * 
+     *
      */
     public function __construct($handler, $middleware = null)
     {
@@ -57,7 +57,8 @@ class Handler implements RequestHandlerInterface
         }
 
         // middleware interface
-        if ($this->middleware instanceof MiddlewareInterface &&
+        if (
+            $this->middleware instanceof MiddlewareInterface &&
             $this->handler instanceof RequestHandlerInterface
         ) {
             return $this->middleware->process($request, $this->handler);
