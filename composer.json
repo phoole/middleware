@@ -2,7 +2,7 @@
     "name": "phoole/middleware",
     "type": "library",
     "license": "Apache-2.0",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A slim middleware implementation",
     "keywords": ["phoole", "library", "php", "middleware", "swoole"],
     "authors": [

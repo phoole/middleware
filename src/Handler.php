@@ -18,33 +18,32 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Handler
- *
- * Convert a middleware to a handler in the queue
+ * 
+ * wrapper for middleware/callable/handler
  *
  * @package Phoole\Middleware
  */
 class Handler implements RequestHandlerInterface
 {
     /**
-     * @var MiddlewareInterface
+     * @var MiddlewareInterface|callable
      */
     private $middleware;
 
     /**
-     * @var RequestHandlerInterface
+     * @var RequestHandlerInterface|callable
      */
     private $handler;
 
     /**
-     * @param MiddlewareInterface $middleware
-     * @param RequestHandlerInterface $handler
+     * @param RequestHandlerInterface|callable $handler
+     * @param MiddlewareInterface|callable $middleware
+     * 
      */
-    public function __construct(
-        MiddlewareInterface $middleware,
-        RequestHandlerInterface $handler
-    ) {
-        $this->middleware = $middleware;
+    public function __construct($handler, $middleware = null)
+    {
         $this->handler = $handler;
+        $this->middleware = $middleware;
     }
 
     /**
@@ -52,6 +51,17 @@ class Handler implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->middleware->process($request, $this->handler);
+        // nulled middleware
+        if (is_null($this->middleware)) {
+            return ($this->handler)($request);
+        }
+
+        // middleware interface
+        if ($this->middleware instanceof MiddlewareInterface) {
+            return $this->middleware->process($request, $this->handler);
+        }
+        
+        // callable middleware
+        return ($this->middleware)($request, $this->handler);
     }
 }

@@ -32,6 +32,8 @@ class MiddleTwo implements MiddlewareInterface
     }
 }
 
+
+
 class QueueTest extends TestCase
 {
     private $obj;
@@ -71,9 +73,16 @@ class QueueTest extends TestCase
      */
     public function testAdd()
     {
-        $this->expectOutputString('Middle2_X_Middle1');
+        $this->expectOutputString('Middle2Middle3_X_Middle1');
         $this->obj->add(new MiddleOne());
         $this->obj->add(new MiddleTwo());
+        $this->obj->add(
+            function(ServerRequestInterface $request, RequestHandlerInterface $handler)
+            {
+                echo "Middle3";
+                return $handler->handle($request);
+            }
+        );
         $res = $this->obj->handle(new ServerRequest('GET', 'http://bingo.com/get'));
         $this->assertEquals(404, $res->getStatusCode());
     }
@@ -101,10 +110,25 @@ class QueueTest extends TestCase
      */
     public function testHandle()
     {
-        $this->expectExceptionMessage('default handler not set');
+        // no default handler set
+        $this->expectExceptionMessage('unknown type of default handler');
         $obj = new Queue();
         $obj->add(new MiddleOne());
         $obj->add(new MiddleTwo());
+        $res = $obj->handle(new ServerRequest('GET', 'http://bingo.com/get'));
+    }
+
+    /**
+     * @covers Phoole\Middleware\Queue::handle()
+     */
+    public function testHandle2()
+    {
+        // callable handler
+        $obj = new Queue(function(ServerRequestInterface $request) {
+            return new Response(404);
+        });
+        $this->expectOutputString('Middle1');
+        $obj->add(new MiddleOne());
         $res = $obj->handle(new ServerRequest('GET', 'http://bingo.com/get'));
     }
 }
