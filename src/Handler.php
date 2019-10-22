@@ -57,7 +57,9 @@ class Handler implements RequestHandlerInterface
         }
 
         // middleware interface
-        if ($this->middleware instanceof MiddlewareInterface) {
+        if ($this->middleware instanceof MiddlewareInterface &&
+            $this->handler instanceof RequestHandlerInterface
+        ) {
             return $this->middleware->process($request, $this->handler);
         }
         
