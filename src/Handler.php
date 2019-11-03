@@ -7,18 +7,17 @@
  * @package   Phoole\Middleware
  * @copyright Copyright (c) 2019 Hong Zhang
  */
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Phoole\Middleware;
 
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Handler
- *
  * wrapper for middleware/callable/handler
  *
  * @package Phoole\Middleware
@@ -36,11 +35,10 @@ class Handler implements RequestHandlerInterface
     private $handler;
 
     /**
-     * @param RequestHandlerInterface|callable $handler
-     * @param MiddlewareInterface|callable $middleware
-     *
+     * @param  RequestHandlerInterface|callable $handler
+     * @param  MiddlewareInterface|callable     $middleware
      */
-    public function __construct($handler, $middleware = null)
+    public function __construct($handler, $middleware = NULL)
     {
         $this->handler = $handler;
         $this->middleware = $middleware;
@@ -63,7 +61,7 @@ class Handler implements RequestHandlerInterface
         ) {
             return $this->middleware->process($request, $this->handler);
         }
-        
+
         // callable middleware
         return ($this->middleware)($request, $this->handler);
     }

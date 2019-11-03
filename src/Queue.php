@@ -7,24 +7,22 @@
  * @package   Phoole\Middleware
  * @copyright Copyright (c) 2019 Hong Zhang
  */
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Phoole\Middleware;
 
+use LogicException;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Queue
- *
  * Runnable queue of middlewares
  *
  * ```php
  * // init the queue with default handler(callable or RequestHandlerInterface)
  * $queue = new Queue(function($request) { return new Response(404)}; );
- *
  * // add middlewares
  * $queue->add(
  *     new SessionMiddleware(), // object
@@ -34,7 +32,6 @@ use Psr\Http\Message\ServerRequestInterface;
  *         return $response;
  *     },
  * );
- *
  * // run the queue
  * $queue->handle($request);
  * ```
@@ -44,7 +41,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class Queue implements RequestHandlerInterface, MiddlewareInterface
 {
     /**
-     * queue of the middleware or callables
+     * queue of the middlewares or callables
      *
      * @var  MiddlewareInterface[]|callable[]
      */
@@ -60,11 +57,16 @@ class Queue implements RequestHandlerInterface, MiddlewareInterface
     /**
      * Constructor
      *
-     * @param  RequestHandlerInterface|callable|null $defaultHandler
+     * @param  ResponseInterface $defaultResponse
      */
-    public function __construct($defaultHandler = null)
+    public function __construct(?ResponseInterface $defaultResponse = NULL)
     {
-        $this->defaultHandler = $defaultHandler;
+        if (!is_null($defaultResponse)) {
+            $this->defaultHandler =
+                function(ServerRequestInterface $request) use ($defaultResponse) {
+                    return $defaultResponse;
+                };
+        }
     }
 
     /**
@@ -73,26 +75,12 @@ class Queue implements RequestHandlerInterface, MiddlewareInterface
      * @param  MiddlewareInterface|callable ...$middlewares
      * @return $this
      */
-    public function add(...$middlewares): Queue
+    public function add(...$middlewares)
     {
         foreach ($middlewares as $m) {
             $this->middlewares[] = $m;
         }
         return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @throws \LogicException if default handler not set
-     */
-    public function handle(ServerRequestInterface $request): ResponseInterface
-    {
-        $handler = $this->fixHandler($this->defaultHandler);
-        foreach (array_reverse($this->middlewares) as $middleware) {
-            $handler = new Handler($handler, $middleware);
-        }
-        return $handler->handle($request);
     }
 
     /**
@@ -107,11 +95,24 @@ class Queue implements RequestHandlerInterface, MiddlewareInterface
     }
 
     /**
+     * {@inheritDoc}
+     * @throws LogicException if default handler not set
+     */
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $handler = $this->fixHandler($this->defaultHandler);
+        foreach (array_reverse($this->middlewares) as $middleware) {
+            $handler = new Handler($handler, $middleware);
+        }
+        return $handler->handle($request);
+    }
+
+    /**
      * convert to standard RequestHandlerInterface
      *
-     * @var    RequestHandlerInterface|callable|null $handler
      * @return RequestHandlerInterface
-     * @throws \LogicException
+     * @throws LogicException
+     * @var    RequestHandlerInterface|callable|null $handler
      */
     protected function fixHandler($handler): RequestHandlerInterface
     {
@@ -123,6 +124,6 @@ class Queue implements RequestHandlerInterface, MiddlewareInterface
             return new Handler($handler);
         }
 
-        throw new \LogicException('unknown type of default handler');
+        throw new LogicException('unknown type of default handler');
     }
 }
