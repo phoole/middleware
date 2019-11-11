@@ -7,11 +7,10 @@
  * @package   Phoole\Middleware
  * @copyright Copyright (c) 2019 Hong Zhang
  */
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Phoole\Middleware;
 
-use LogicException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -22,7 +21,8 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * ```php
  * // init the queue with default handler(callable or RequestHandlerInterface)
- * $queue = new Queue(function($request) { return new Response(404)}; );
+ * $queue = new Queue(new Response(404));
+ *
  * // add middlewares
  * $queue->add(
  *     new SessionMiddleware(), // object
@@ -96,7 +96,8 @@ class Queue implements RequestHandlerInterface, MiddlewareInterface
 
     /**
      * {@inheritDoc}
-     * @throws LogicException if default handler not set
+     *
+     * @throws \LogicException if default handler not set
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
@@ -110,9 +111,9 @@ class Queue implements RequestHandlerInterface, MiddlewareInterface
     /**
      * convert to standard RequestHandlerInterface
      *
+     * @param  RequestHandlerInterface|callable|null $handler
      * @return RequestHandlerInterface
-     * @throws LogicException
-     * @var    RequestHandlerInterface|callable|null $handler
+     * @throws \LogicException
      */
     protected function fixHandler($handler): RequestHandlerInterface
     {
@@ -124,6 +125,6 @@ class Queue implements RequestHandlerInterface, MiddlewareInterface
             return new Handler($handler);
         }
 
-        throw new LogicException('unknown type of default handler');
+        throw new \LogicException('unknown type of default handler');
     }
 }
