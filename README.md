@@ -6,7 +6,7 @@
 [![Latest Stable Version](https://img.shields.io/github/v/release/phoole/middleware)](https://packagist.org/packages/phoole/middleware)
 [![License](https://img.shields.io/github/license/phoole/middleware)]()
 
-A slim and fast PSR-15 compliant middleware implementation for PHP
+Slim and simple PSR-15 compliant middleware runner library for PHP.
 
 Installation
 ---
